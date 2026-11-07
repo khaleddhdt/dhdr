@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة وتحليل نتائج الطلاب</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 24px;
+            border-bottom: 2px solid #eaeaea;
+            padding-bottom: 15px;
+        }
+        .section {
+            margin-bottom: 25px;
+            background: #f9fafb;
+            padding: 15px 20px;
+            border-radius: 8px;
+            border: 1px solid #e1e4e8;
+        }
+        .section h3 {
+            margin-top: 0;
+            color: #1a73e8;
+            font-size: 18px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background: #fff;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+        th {
+            background-color: #f1f3f4;
+            color: #3c4043;
+        }
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .success { background-color: #e6f4ea; color: #137333; }
+        .warning { background-color: #fce8e6; color: #c5221f; }
+        .highlight-box {
+            background: #e8f0fe;
+            padding: 10px 15px;
+            border-radius: 6px;
+            color: #1967d2;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+        .console-note {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🎓 نظام إدارة وتحليل نتائج الطلاب (Console & UI Based)</h1>
+
+        <!-- قسم جدول الطلاب -->
+        <div class="section">
+            <h3>1 & 2 & 3. تقرير بيانات الطلاب وتحليلها</h3>
+            <table id="studentsTable">
+                <thead>
+                    <tr>
+                        <th>رقم الجلوس (ID)</th>
+                        <th>اسم الطالب</th>
+                        <th>درجات المواد</th>
+                        <th>نسبة الحضور</th>
+                        <th>المتوسط</th>
+                        <th>التقدير</th>
+                        <th>النتيجة النهائية</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- يتم تعبئتها بواسطة الجافاسكريبت -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- قسم لجنة الرأفة -->
+        <div class="section">
+            <h3>4. لجنة الرأفة (Array Methods: filter, map, reduce)</h3>
+            <p>الطلاب المتعثرون الذين تتراوح متوسطاتهم بين (40 و 49):</p>
+            <div id="strugglingNames" class="highlight-box"></div>
+            
+            <p style="margin-top: 15px;">متوسط درجات الطلاب المتعثرين بعد إضافة 5 درجات رأفة:</p>
+            <div id="boostedAverageResult" class="highlight-box"></div>
+        </div>
+    </div>
+
+    <p class="console-note">💡 ملاحظة: تم تنفيذ جميع العمليات وطباعتها أيضاً في وحدة التحكم (Console) بالضغط على F12.</p>
+
+    <script>
+        // 1. هيكلة بيانات الطالب (Class & Constructor)
+        class Student {
+            constructor(id, name, grades, attendance) {
+                this.id = id;
+                this.name = name;
+                this.grades = grades;       // مصفوفة درجات 3 مواد
+                this.attendance = attendance; // نسبة الحضور
+            }
+
+            // 2. دوال التحليل الأكاديمي (Methods)
+            
+            // دالة حساب المتوسط باستخدام reduce
+            calculateAverage() {
+                const sum = this.grades.reduce((total, grade) => total + grade, 0);
+                return sum / this.grades.length;
+            }
+
+            // دالة التقدير باستخدام قاعدة الشروط (if/else) للحروف (A, B, C, D, E, F)
+            getGrade() {
+                const avg = this.calculateAverage();
+                if (avg >= 85) return 'A';
+                else if (avg >= 75) return 'B';
+                else if (avg >= 65) return 'C';
+                else if (avg >= 55) return 'D';
+                else if (avg >= 50) return 'E';
+                else return 'F';
+            }
+
+            // دالة النتيجة النهائية: شرط (المتوسط 50 فأكثر && الحضور 75 فأكثر)
+            getFinalResult() {
+                const avg = this.calculateAverage();
+                if (avg >= 50 && this.attendance >= 75) {
+                    return "ناجح";
+                } else {
+                    return "يحتاج مراجعة";
+                }
+            }
+        }
+
+        // 3. نظام تشغيل الجامعة (Objects Array) - 4 طلاب (بينهم متعثرون متوسط درجاتهم من 40 إلى 49)
+        const studentsList = [
+            new Student(101, "أحمد محمود", [85, 90, 88], 90),  // متفوق
+            new Student(102, "سارة علي", [42, 45, 43], 80),   // متعثر (المتوسط: 43.33)
+            new Student(103, "محمود جمال", [40, 48, 44], 70), // متعثر (المتوسط: 44.00)
+            new Student(104, "منى حسن", [70, 75, 80], 95)     // متوسط
+        ];
+
+        // 4. لجنة الرأفة (Array Methods)
+        
+        // الاستخراج: استخدام filter لاستخراج الطلاب بين 40 و 49
+        const strugglingStudents = studentsList.filter(student => {
+            const avg = student.calculateAverage();
+            return avg >= 40 && avg <= 49;
+        });
+
+        // المعالجة: استخدام map لإضافة 5 درجات رأفة لكل طالب متعثر
+        const boostedAverages = strugglingStudents.map(student => student.calculateAverage() + 5);
+
+        // التحليل: استخدام reduce لجمع المتوسطات الجديدة بعد التعديل (مع درع الحماية للقسمة على صفر)
+        const averageAfterBoost = boostedAverages.length > 0 
+            ? boostedAverages.reduce((acc, curr) => acc + curr, 0) / boostedAverages.length 
+            : 0;
+
+        // 5. المخرجات (Console Logging)
+        console.log("=== تقرير الطلاب الرئيسي ===");
+        studentsList.forEach(student => {
+            console.log(`الاسم: ${student.name} | المتوسط: ${student.calculateAverage().toFixed(2)} | التقدير: ${student.getGrade()} | النتيجة: ${student.getFinalResult()}`);
+        });
+
+        console.log("\n=== الطلاب المتعثرون المشمولون بالرأفة ===");
+        console.log(strugglingStudents.map(s => s.name));
+
+        console.log("\n=== متوسط درجات المتعثرين بعد التعديل ===");
+        console.log(averageAfterBoost.toFixed(2));
+
+        // عرض البيانات داخل الصفحة تفاعلياً
+        const tableBody = document.getElementById("tableBody");
+        studentsList.forEach(student => {
+            const avg = student.calculateAverage().toFixed(2);
+            const grade = student.getGrade();
+            const result = student.getFinalResult();
+            const badgeClass = result === "ناجح" ? "success" : "warning";
+
+            const row = `<tr>
+                <td>${student.id}</td>
+                <td>${student.name}</td>
+                <td>${student.grades.join(", ")}</td>
+                <td>${student.attendance}%</td>
+                <td>${avg}</td>
+                <td><strong>${grade}</strong></td>
+                <td><span class="badge ${badgeClass}">${result}</span></td>
+            </tr>`;
+            tableBody.innerHTML += row;
+        });
+
+        // عرض بيانات الرأفة في الصفحة
+        const namesText = strugglingStudents.length > 0 
+            ? strugglingStudents.map(s => s.name).join("، ") 
+            : "لا يوجد طلاب متعثرون في هذه الفئة";
+        
+        document.getElementById("strugglingNames").innerText = namesText;
+        document.getElementById("boostedAverageResult").innerText = averageAfterBoost.toFixed(2);
+    </script>
+</body>
+</html>
